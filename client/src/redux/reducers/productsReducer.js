@@ -58,7 +58,7 @@ const createNewProduct = (state, action) => {
     list: [
       ...state.list,
       {
-        id: state.list[state.list.length - 1].id + 1,
+        id: state.list.length === 0 ? 1   :state.list[state.list.length - 1].id + 1,
         name: action.newProduct.name,
         price: action.newProduct.price,
         description: action.newProduct.description,
