@@ -3,6 +3,7 @@ const PRODUCT_CREATE = "PRODUCT-CREATE";
 const UPDATE_NEW_PRODUCT = "UPDATE-NEW-PRODUCT";
 const CREATE_NEW_PRODUCT = "CREATE-NEW-PRODUCT";
 const DELETE_PRODUCT = "DELETE-PRODUCT";
+const UPDATE_QUANTITY = "UPDATE-QUANTITY"; // New action type for updating quantity
 
 const initialState = {
   list: [
@@ -37,6 +38,7 @@ const productAdd = (state) => {
     newProductName: "",
   };
 };
+
 const deleteProduct = (state, action) => {
   const updatedList = state.list.filter((item) => item.id !== action.productId);
   return {
@@ -58,12 +60,25 @@ const createNewProduct = (state, action) => {
     list: [
       ...state.list,
       {
-        id: state.list.length === 0 ? 1   :state.list[state.list.length - 1].id + 1,
+        id: state.list.length === 0 ? 1 : state.list[state.list.length - 1].id + 1,
         name: action.newProduct.name,
         price: action.newProduct.price,
         description: action.newProduct.description,
+        quantity: 1, 
       },
     ],
+  };
+};
+
+
+const updateQuantity = (state, action) => {
+  const updatedList = state.list.map((item) =>
+    item.id === action.productId ? { ...item, quantity: action.newQuantity } : item
+  );
+
+  return {
+    ...state,
+    list: updatedList,
   };
 };
 
@@ -76,9 +91,11 @@ const ProductsReducer = (state = initialState, action) => {
     case CREATE_NEW_PRODUCT:
       return createNewProduct(state, action);
     case DELETE_PRODUCT:
-        return deleteProduct(state, action);
-      default:
-        return state;
+      return deleteProduct(state, action);
+    case UPDATE_QUANTITY:
+      return updateQuantity(state, action); // Handle quantity updates
+    default:
+      return state;
   }
 };
 
@@ -95,4 +112,10 @@ export const deleteProductAC = (productId) => ({
   type: DELETE_PRODUCT,
   productId,
 });
+export const updateQuantityAC = (productId, newQuantity) => ({
+  type: UPDATE_QUANTITY,
+  productId,
+  newQuantity,
+});
+
 export default ProductsReducer;

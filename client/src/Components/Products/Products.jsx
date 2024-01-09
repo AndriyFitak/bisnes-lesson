@@ -7,9 +7,7 @@ import {
   ProductItem,
   ProductInfo,
   ProductActions,
-
-} from "../../Components/Products.styled.js"
-
+} from "../../Components/Products.styled.js";
 
 const Products = (props) => {
   const [newProduct, setNewProduct] = useState({
@@ -17,31 +15,21 @@ const Products = (props) => {
     price: "",
     description: "",
   });
-const handleDelete = (id) => {
-    props.deleteProduct(id);
-  };
-  
-  const ProductsCollection = props.products.list.map((item) => (
-    <ProductItem key={item.id}>
-      <ProductInfo>
-        <div>{item.name}</div>
-        <div>Price: {item.price}</div>
-        <div>Description: {item.description}</div>
-      </ProductInfo>
-      <ProductActions>
-        <button onClick={() => handleDelete(item.id)}>Delete</button>
-      </ProductActions>
-    </ProductItem>
-  ));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
   };
 
-  const handleClick = () => {
+  const handleQuantityChange = (productId, amount) => {
+    amount = parseInt(amount, 10); 
+    props.updateQuantity(productId, Math.max(1, amount));
+  };
+  
+
+  const handleCreateProduct = () => {
     const { name, price, description } = newProduct;
-    const newProductData = { name, price, description };
+    const newProductData = { name, price, description, quantity: 1 };
     props.addProducts(newProductData);
     setNewProduct({
       name: "",
@@ -74,10 +62,28 @@ const handleDelete = (id) => {
           name="description"
           value={newProduct.description}
         />
-        <button onClick={handleClick}>Create Product</button>
+        <button onClick={handleCreateProduct}>Create Product</button>
       </ProductForm>
 
-      <ProductList>{ProductsCollection}</ProductList>
+      <ProductList>
+        {props.products.list.map((item) => (
+          <ProductItem key={item.id}>
+            <ProductInfo>
+              <div>{item.name}</div>
+              <div>Price: {item.price}</div>
+              <div>Description: {item.description}</div>
+              <div>
+                <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
+                <p>{item.quantity}</p>
+                <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
+              </div>
+            </ProductInfo>
+            <ProductActions>
+              <button onClick={() => props.deleteProduct(item.id)}>Delete</button>
+            </ProductActions>
+          </ProductItem>
+        ))}
+      </ProductList>
     </ProductsWrapper>
   );
 };
